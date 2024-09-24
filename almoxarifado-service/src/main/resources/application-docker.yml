@@ -1,0 +1,16 @@
+spring:
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      bindings:
+        pedidoEventConsumer-in-0:
+          destination: pedidos
+      rabbit:
+        bindings:
+          pedidoEventConsumer-in-0:
+            consumer:
+              autoBindDlq: true

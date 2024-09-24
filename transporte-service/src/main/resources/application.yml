@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        pedidoEventConsumer-in-0:
+          destination: pedidos
+          group: transporte
+      rabbit:
+        bindings:
+          pedidoEventConsumer-in-0:
+            consumer:
+              autoBindDlq: true
+  application:
+    name: transporte-service
