@@ -6,7 +6,7 @@ import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.integration.AckMode;
 import com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAdapter;
 import com.google.cloud.spring.pubsub.support.converter.JacksonPubSubMessageConverter;
-import br.com.infnet.transporte_service.eventos.EstadoEntregaMudou;
+import br.com.infnet.transporte_service.eventos.RegistroAlterado;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +14,13 @@ import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.messaging.MessageChannel;
 
 @Configuration
-public class PetFriendsTransporteMessageConfig {
+public class TransporteMessageConfig {
     @Bean
-    public JacksonPubSubMessageConverter estadoMudouConverter() {
+    public JacksonPubSubMessageConverter statusAlteradoConverter() {
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addSerializer(EstadoEntregaMudou.class, new EstadoEntregaMudouSerializer());
-        simpleModule.addDeserializer(EstadoEntregaMudou.class, new EstadoEntregaMudouDeserializer());
+        simpleModule.addSerializer(RegistroAlterado.class, new RegistroAlteradoSerializer());
+        simpleModule.addDeserializer(RegistroAlterado.class, new RegistroAlteradoDeserializer());
         objectMapper.registerModule(simpleModule);
         return new JacksonPubSubMessageConverter(objectMapper);
     }
@@ -34,11 +34,11 @@ public class PetFriendsTransporteMessageConfig {
     public PubSubInboundChannelAdapter inboundChannelAdapter(
             @Qualifier("inputMessageChannel") MessageChannel messageChannel, PubSubTemplate pubSubTemplate) {
 
-        pubSubTemplate.setMessageConverter(estadoMudouConverter());
+        pubSubTemplate.setMessageConverter(statusAlteradoConverter());
         PubSubInboundChannelAdapter adapter = new PubSubInboundChannelAdapter(pubSubTemplate, "transporte-sub");
         adapter.setOutputChannel(messageChannel);
         adapter.setAckMode(AckMode.MANUAL);
-        adapter.setPayloadType(EstadoEntregaMudou.class);
+        adapter.setPayloadType(RegistroAlterado.class);
         return adapter;
     }
 }

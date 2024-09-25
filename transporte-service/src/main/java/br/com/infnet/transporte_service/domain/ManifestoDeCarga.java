@@ -3,12 +3,14 @@ package br.com.infnet.transporte_service.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import br.com.infnet.transporte_service.infra.repository.EnderecoConverter;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 public class ManifestoDeCarga implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -17,11 +19,11 @@ public class ManifestoDeCarga implements Serializable {
     @Column(nullable = false)
     private Long id;
 
-    private LocalDate dataSaida;
+    private LocalDate saida;
 
     private String motorista;
 
-    private String placaVeiculo;
+    private String placa;
 
     @Convert(converter = EnderecoConverter.class)
     private Endereco origem;
@@ -36,32 +38,32 @@ public class ManifestoDeCarga implements Serializable {
     private boolean emEdicao;
 
     public ManifestoDeCarga() {
-        this.dataSaida = LocalDate.now();
+        this.saida = LocalDate.now();
         this.emEdicao = true;
     }
 
-    public ManifestoDeCarga(String motorista, String placaVeiculo, Endereco origem, Endereco destinoFinal) {
+    public ManifestoDeCarga(String motorista, String placa, Endereco origem, Endereco destinoFinal) {
         this.motorista = motorista;
-        this.placaVeiculo = placaVeiculo;
+        this.placa = placa;
         this.origem = origem;
         this.destinoFinal = destinoFinal;
-        this.dataSaida = LocalDate.now();
+        this.saida = LocalDate.now();
         this.emEdicao = true;
     }
 
-    public ManifestoDeCarga(Long id, String motorista, String placaVeiculo, Endereco origem, Endereco destinoFinal, List<Entrega> entregas) {
+    public ManifestoDeCarga(Long id, String motorista, String placa, Endereco origem, Endereco destinoFinal, List<Entrega> entregas) {
         this.id = id;
         this.motorista = motorista;
-        this.placaVeiculo = placaVeiculo;
+        this.placa = placa;
         this.origem = origem;
         this.destinoFinal = destinoFinal;
         this.entregas = entregas;
-        this.dataSaida = LocalDate.now();
+        this.saida = LocalDate.now();
         this.emEdicao = true;
     }
 
-    public void adicionarEntrega(Long pedidoId, Endereco destino) {
-        if (pedidoId == null) {
+    public void addEntrega(Long idPedido, Endereco destino) {
+        if (idPedido == null) {
             throw new IllegalArgumentException("Pedido inválido");
         }
         if (destino == null) {
@@ -69,76 +71,12 @@ public class ManifestoDeCarga implements Serializable {
         }
 
         Entrega entrega = new Entrega();
-        entrega.setPedidoId(pedidoId);
+        entrega.setPedidoID(idPedido);
         entrega.setEndereco(destino);
         entrega.setManifestoId(this);
         if (this.entregas == null) {
             this.entregas = new ArrayList<>();
         }
         this.entregas.add(entrega);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getDataSaida() {
-        return dataSaida;
-    }
-
-    public void setDataSaida(LocalDate dataSaida) {
-        this.dataSaida = dataSaida;
-    }
-
-    public String getMotorista() {
-        return motorista;
-    }
-
-    public void setMotorista(String motorista) {
-        this.motorista = motorista;
-    }
-
-    public String getPlacaVeiculo() {
-        return placaVeiculo;
-    }
-
-    public void setPlacaVeiculo(String placaVeiculo) {
-        this.placaVeiculo = placaVeiculo;
-    }
-
-    public Endereco getOrigem() {
-        return origem;
-    }
-
-    public void setOrigem(Endereco origem) {
-        this.origem = origem;
-    }
-
-    public Endereco getDestinoFinal() {
-        return destinoFinal;
-    }
-
-    public void setDestinoFinal(Endereco destinoFinal) {
-        this.destinoFinal = destinoFinal;
-    }
-
-    public List<Entrega> getEntregas() {
-        return entregas;
-    }
-
-    public void setEntregas(List<Entrega> entregas) {
-        this.entregas = entregas;
-    }
-
-    public boolean isEmEdicao() {
-        return emEdicao;
-    }
-
-    public void setEmEdicao(boolean emEdicao) {
-        this.emEdicao = emEdicao;
     }
 }

@@ -15,9 +15,9 @@ public class PedidoService {
     @Autowired
     private PedidoClient pedidoClient;
 
-    public Pedido findPedidoById(Long id) {
+    public Pedido getPedidoById(Long id) {
         try {
-            return pedidoClient.findPedidoById(id);
+            return pedidoClient.getPedidoById(id);
         } catch (Exception e) {
             LOG.error("**** ERRO **** " + e.getMessage());
         }

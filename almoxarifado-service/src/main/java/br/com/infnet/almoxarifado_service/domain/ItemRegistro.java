@@ -10,6 +10,7 @@ import lombok.ToString;
 @Data
 @Entity
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class ItemRegistro {
     @Id
@@ -26,5 +27,4 @@ public class ItemRegistro {
     @JoinColumn(name = "registroID", referencedColumnName = "ID")
     private Registro registroId;
 
-    public ItemRegistro() {}
 }

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface ManifestoDeTransporteRepository extends JpaRepository<ManifestoDeCarga, Long> {
+public interface RegistroTransporteRepository extends JpaRepository<ManifestoDeCarga, Long> {
     @Query("SELECT m FROM ManifestoDeCarga m WHERE m.emEdicao = true")
     Optional<ManifestoDeCarga> findEmEdicao();
 }

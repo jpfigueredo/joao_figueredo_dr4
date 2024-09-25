@@ -7,10 +7,10 @@ import com.google.cloud.spring.pubsub.support.converter.JacksonPubSubMessageConv
 import br.com.infnet.transporte_service.domain.Endereco;
 import br.com.infnet.transporte_service.domain.Entrega;
 import br.com.infnet.transporte_service.domain.ManifestoDeCarga;
-import br.com.infnet.transporte_service.eventos.EstadoEntregaMudou;
+import br.com.infnet.transporte_service.eventos.RegistroAlterado;
 import br.com.infnet.transporte_service.infra.client.Pedido;
 import br.com.infnet.transporte_service.infra.repository.EntregaRepository;
-import br.com.infnet.transporte_service.infra.repository.ManifestoDeTransporteRepository;
+import br.com.infnet.transporte_service.infra.repository.RegistroTransporteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class TransporteService {
     JacksonPubSubMessageConverter converter;
 
     @Autowired
-    private ManifestoDeTransporteRepository repository;
+    private RegistroTransporteRepository repository;
 
     @Autowired
     private EntregaRepository entregaRepository;
@@ -44,9 +44,9 @@ public class TransporteService {
     @Autowired
     private ClienteService clienteService;
 
-    private void criarManifesto(Pedido pedido) {
+    private void createManifesto(Pedido pedido) {
         ManifestoDeCarga manifesto;
-        Optional<ManifestoDeCarga> manifestoDb = this.obterManifestosEmEdicao();
+        Optional<ManifestoDeCarga> manifestoDb = this.findManifestosEmEdicao();
 
         if (manifestoDb.isPresent()) {
             manifesto = manifestoDb.get();
@@ -54,51 +54,51 @@ public class TransporteService {
             manifesto = getManifestoDetails();
         }
 
-        manifesto.adicionarEntrega(pedido.getID(), clienteService.getEnderecoByCustomerId(pedido.getCustomerId()));
+        manifesto.addEntrega(pedido.getID(), clienteService.getEnderecoByCustomerId(pedido.getCustomerId()));
         repository.save(manifesto);
     }
 
-    public void processarEvento(EstadoEntregaMudou evento) {
-        if(Objects.equals(evento.getEstado(), "EM_TRANSITO")) {
-            Pedido pedido = pedidoService.getPedidoById(evento.getIdPedido());
-            this.criarManifesto(pedido);
+    public void processEvent(RegistroAlterado event) {
+        if(Objects.equals(event.getStatus(), "EM_TRANSITO")) {
+            Pedido pedido = pedidoService.getPedidoById(event.getPedidoID());
+            this.createManifesto(pedido);
         }
     }
 
-    private void enviar(EstadoEntregaMudou estado) {
+    private void send(RegistroAlterado status) {
         pubSubTemplate.setMessageConverter(converter);
-        pubSubTemplate.publish("teste-dr4", estado);
-        LOG.info("***** Mensagem Publicada ---> " + estado);
+        pubSubTemplate.publish("teste-dr4", status);
+        LOG.info("***** Mensagem Publicada ---> " + status);
     }
 
     @ServiceActivator(inputChannel = "inputMessageChannel")
-    private void receber(EstadoEntregaMudou payload,
-                         @Header(GcpPubSubHeaders.ORIGINAL_MESSAGE) ConvertedBasicAcknowledgeablePubsubMessage<EstadoEntregaMudou> message) {
+    private void receive(RegistroAlterado payload,
+                         @Header(GcpPubSubHeaders.ORIGINAL_MESSAGE) ConvertedBasicAcknowledgeablePubsubMessage<RegistroAlterado> message) {
 
         LOG.info("***** Mensagem Recebida ---> " + payload);
         message.ack();
-        this.processarEvento(payload);
+        this.processEvent(payload);
     }
 
-    public Entrega concluirEntrega(long entregaId) {
+    public Entrega encerrarEntrega(long entregaId) {
         Entrega entrega = entregaRepository.getReferenceById(entregaId);
-        entrega.concluirEntrega();
+        entrega.encerrarEntrega();
         entrega = entregaRepository.save(entrega);
-        this.enviar(new EstadoEntregaMudou(entrega.getPedidoId(), "ENTREGUE"));
+        this.send(new RegistroAlterado(entrega.getPedidoID(), "ENTREGUE"));
         return entrega;
     }
 
-    public ManifestoDeCarga obterPorId(long id) {
+    public ManifestoDeCarga findManifestoDeCargaById(long id) {
         return repository.getReferenceById(id);
     }
 
-    public ManifestoDeCarga concluirEdicao(long id) {
-        ManifestoDeCarga manifesto = this.obterPorId(id);
+    public ManifestoDeCarga encerrarEdicao(long id) {
+        ManifestoDeCarga manifesto = this.findManifestoDeCargaById(id);
         manifesto.setEmEdicao(false);
         return repository.save(manifesto);
     }
 
-    public Optional<ManifestoDeCarga> obterManifestosEmEdicao() {
+    public Optional<ManifestoDeCarga> findManifestosEmEdicao() {
         return repository.findEmEdicao();
     }
 

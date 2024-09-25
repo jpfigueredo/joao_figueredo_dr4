@@ -7,25 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api/transportes")
 public class TransporteController {
 
     @Autowired
-    private TransporteService service;
+    private TransporteService transporteService;
 
-    @GetMapping("/manifestos/{id}")
-    public ManifestoDeCarga obterManifestoPorId(@PathVariable long id) {
-        return service.obterPorId(id);
+    @PatchMapping("/cargas/encerrar-edicao/{id}")
+    public ManifestoDeCarga encerrarEdicao(@PathVariable long id) {
+        return transporteService.encerrarEdicao(id);
     }
 
-    @PatchMapping("/manifestos/concluir-edicao/{id}")
-    public ManifestoDeCarga concluirEdicao(@PathVariable long id) {
-        return service.concluirEdicao(id);
+    @GetMapping("/cargas/{id}")
+    public ManifestoDeCarga findManifestoDeCargaById(@PathVariable long id) {
+        return transporteService.findManifestoDeCargaById(id);
     }
 
-    @PostMapping("/entregas/concluir/{id}")
-    public Entrega concluirEntrega(@PathVariable long id) {
-        return service.concluirEntrega(id);
+    @PostMapping("/entregas/encerrar/{id}")
+    public Entrega encerrarEntrega(@PathVariable long id) {
+        return transporteService.encerrarEntrega(id);
     }
+
 
 }

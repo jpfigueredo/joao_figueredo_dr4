@@ -1,9 +1,6 @@
 package br.edu.infnet;
 
-import br.edu.infnet.pedidos.domain.PedidoStatus;
-import br.edu.infnet.pedidos.eventos.EstadoPedidoMudou;
 import br.edu.infnet.pedidos.infra.service.PedidoService;
-import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

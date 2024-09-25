@@ -2,7 +2,7 @@ package br.edu.infnet.pedidos.infra.service;
 
 import br.edu.infnet.pedidos.domain.Pedido;
 import br.edu.infnet.pedidos.domain.PedidoStatus;
-import br.edu.infnet.pedidos.eventos.EstadoPedidoMudou;
+import br.edu.infnet.pedidos.eventos.RegistroAlterado;
 import br.edu.infnet.pedidos.infra.repository.PedidoRepository;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.support.GcpPubSubHeaders;
@@ -35,7 +35,7 @@ public class PedidoService {
         Pedido pedido = repository.getReferenceById(id);
         pedido.fecharPedido();
         pedido = repository.save(pedido);
-        enviar(new EstadoPedidoMudou(pedido.getId(), PedidoStatus.FECHADO));
+        enviar(new RegistroAlterado(pedido.getId(), PedidoStatus.FECHADO));
         return pedido;
     }
 
@@ -43,13 +43,13 @@ public class PedidoService {
         Pedido retorno = null;
         if (pedido != null) {
             retorno = repository.save(pedido);
-            enviar(new EstadoPedidoMudou(pedido.getId(), PedidoStatus.NOVO));
+            enviar(new RegistroAlterado(pedido.getId(), PedidoStatus.NOVO));
         }
         return retorno;
     }
 
-    public void processarEvento(EstadoPedidoMudou evento) {
-        switch (evento.getEstado().toString()) {
+    public void processarEvento(RegistroAlterado evento) {
+        switch (evento.getStatus().toString()) {
             case "NOVO":                
                 break;
             case "EM_TRANSITO":
@@ -57,15 +57,15 @@ public class PedidoService {
         }
     }
 
-    private void enviar(EstadoPedidoMudou estado) {
+    private void enviar(RegistroAlterado estado) {
         pubSubTemplate.setMessageConverter(converter);
         pubSubTemplate.publish("teste-dr4", estado);
         LOG.info("***** Mensagem Publicada ---> " + estado);
     }
 
     @ServiceActivator(inputChannel = "inputMessageChannel")
-    private void receber(EstadoPedidoMudou payload,
-            @Header(GcpPubSubHeaders.ORIGINAL_MESSAGE) ConvertedBasicAcknowledgeablePubsubMessage<EstadoPedidoMudou> message) {
+    private void receber(RegistroAlterado payload,
+                         @Header(GcpPubSubHeaders.ORIGINAL_MESSAGE) ConvertedBasicAcknowledgeablePubsubMessage<RegistroAlterado> message) {
 
         LOG.info("***** Mensagem Recebida ---> " + payload);
         message.ack();

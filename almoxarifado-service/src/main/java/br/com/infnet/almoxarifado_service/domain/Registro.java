@@ -23,7 +23,7 @@ public class Registro implements Serializable {
     @Column(nullable = false)
     private Long id;
 
-    private Long pedidoId;
+    private long pedidoID;
 
     @Convert(converter = DescricaoConverter.class)
     private Descricao descricao;
@@ -42,16 +42,16 @@ public class Registro implements Serializable {
         this.status = RegistroStatus.PENDENTE;
         this.dataCriacao = LocalDateTime.now();
     }
-    public Registro(Long pedidoId, String descricao) {
-        this.pedidoId = pedidoId;
+    public Registro(long pedidoID, String descricao) {
+        this.pedidoID = pedidoID;
         this.descricao = new Descricao(descricao);
         this.status = RegistroStatus.PENDENTE;
         this.dataCriacao = LocalDateTime.now();
     }
 
-    public Registro(Long id, Long pedidoId, String descricao, List<ItemRegistro> itens) {
+    public Registro(Long id, long pedidoID, String descricao, List<ItemRegistro> itens) {
         this.id = id;
-        this.pedidoId = pedidoId;
+        this.pedidoID = pedidoID;
         this.descricao = new Descricao(descricao);
         this.status = RegistroStatus.PENDENTE;
         this.dataCriacao = LocalDateTime.now();
@@ -68,7 +68,7 @@ public class Registro implements Serializable {
         this.itens.add(itemRegistro);
     }
 
-    public void concluirOrdem() {
+    public void concluirRegistro() {
         if (this.status == RegistroStatus.PENDENTE) {
             this.status = RegistroStatus.CONCLUIDO;
             this.dataConclusao = LocalDateTime.now();
@@ -77,20 +77,11 @@ public class Registro implements Serializable {
         }
     }
 
-    public void cancelarOrdem() {
+    public void cancelarRegistro() {
         if (this.status == RegistroStatus.PENDENTE) {
             this.status = RegistroStatus.CANCELADO;
         } else {
             throw new IllegalStateException("Ordem de serviço já está concluída ou cancelada.");
         }
     }
-
-    public List<ItemRegistro> getItens() {
-        return itens;
-    }
-
-    public void setItens(List<ItemRegistro> itens) {
-        this.itens = itens;
-    }
-
 }

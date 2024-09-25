@@ -1,6 +1,6 @@
 package br.edu.infnet.pedidos.infra.message;
 
-import br.edu.infnet.pedidos.eventos.EstadoPedidoMudou;
+import br.edu.infnet.pedidos.eventos.RegistroAlterado;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
@@ -20,8 +20,8 @@ public class PetFriendsPedidosMessageConfig {
     public JacksonPubSubMessageConverter estadoMudouConverter() {
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addSerializer(EstadoPedidoMudou.class, new EstadoPedidoMudouSerializer());
-        simpleModule.addDeserializer(EstadoPedidoMudou.class, new EstadoPedidoMudouDeserializer());
+        simpleModule.addSerializer(RegistroAlterado.class, new StatusPedidoMudouSerializer());
+        simpleModule.addDeserializer(RegistroAlterado.class, new StatusPedidoMudouDeserializer());
         objectMapper.registerModule(simpleModule);
         return new JacksonPubSubMessageConverter(objectMapper);
     }
@@ -39,7 +39,7 @@ public class PetFriendsPedidosMessageConfig {
         PubSubInboundChannelAdapter adapter = new PubSubInboundChannelAdapter(pubSubTemplate, "teste-dr4-sub");
         adapter.setOutputChannel(messageChannel);
         adapter.setAckMode(AckMode.MANUAL);
-        adapter.setPayloadType(EstadoPedidoMudou.class);
+        adapter.setPayloadType(RegistroAlterado.class);
         return adapter;
     }
 }

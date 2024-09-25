@@ -1,9 +1,6 @@
-package br.com.infnet.almoxarifado_service.events;
+package br.com.infnet.transporte_service.eventos;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +10,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegistroAlterado implements Serializable {
-
     private long pedidoID;
     private String status;
     private Date momento;
@@ -23,5 +19,4 @@ public class RegistroAlterado implements Serializable {
         this.status = status;
         this.momento = new Date();
     }
-
 }

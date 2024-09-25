@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface PedidoClient {
 
     @GetMapping("/pedidos/{id}")
-    Pedido findPedidoById(@PathVariable("id") Long id);
+    Pedido getPedidoById(@PathVariable("id") Long id);
 }
 

@@ -15,7 +15,7 @@ public class PedidoService {
 
     public Pedido getPedidoById(Long id) {
         try {
-            return pedidoClient.obterPedidoPorId(id);
+            return pedidoClient.getPedidoById(id);
         } catch (Exception e) {
             LOG.error("**** ERRO **** " + e.getMessage());
         }

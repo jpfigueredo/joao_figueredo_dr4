@@ -17,8 +17,8 @@ public class RegistroAlteradoSerializer extends StdSerializer<RegistroAlterado> 
     @Override
     public void serialize(RegistroAlterado event, JsonGenerator jgen, SerializerProvider provider) throws IOException {
         jgen.writeStartObject();
-        jgen.writeNumberField("idPedido", event.getIdPedido());
-        jgen.writeStringField("estado", event.getEstado());
+        jgen.writeNumberField("pedidoID", event.getPedidoID());
+        jgen.writeStringField("status", event.getStatus());
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
         String data = sdf.format(event.getMomento());
         jgen.writeStringField("momento", data);

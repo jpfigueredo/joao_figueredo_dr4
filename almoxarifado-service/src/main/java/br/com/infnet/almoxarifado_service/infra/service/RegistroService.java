@@ -31,21 +31,21 @@ public class RegistroService {
     JacksonPubSubMessageConverter converter;
 
     @Autowired
-    private RegistroRepository repository;
+    private RegistroRepository registroRepository;
 
     @Autowired
     private PedidoService pedidoService;
 
     public Registro save(Registro registro) {
         try {
-            return repository.save(registro);
+            return registroRepository.save(registro);
         } catch (Exception e) {
             LOG.error("**** ERRO **** " + e.getMessage());
         }
         return null;
     }
 
-    private void criarRegistro(Pedido pedido) {
+    private void createRegistro(Pedido pedido) {
         Registro registro = new Registro(pedido.getID(), "Registro do Pedido " + pedido.getID());
         for(ItemRegistro item : pedido.getItemList()) {
             registro.adicionarItem(item.getProductId(), item.getQuantity());
@@ -54,10 +54,10 @@ public class RegistroService {
     }
 
     public void processEvent(RegistroAlterado event) {
-        if(Objects.equals(event.getEstado(), "FECHADO")) {
-            Pedido pedido = pedidoService.findPedidoById(event.getIdPedido());
-            this.criarRegistro(pedido);
-            this.send(new RegistroAlterado(event.getIdPedido(), "EM_PREPARACAO"));
+        if(Objects.equals(event.getStatus(), "FECHADO")) {
+            Pedido pedido = pedidoService.getPedidoById(event.getPedidoID());
+            this.createRegistro(pedido);
+            this.send(new RegistroAlterado(event.getPedidoID(), "EM_PREPARACAO"));
         }
     }
 
@@ -76,17 +76,17 @@ public class RegistroService {
         this.processEvent(payload);
     }
 
-    public Registro findById(Long id) {return repository.getReferenceById(id);}
+    public Registro findById(Long id) {return registroRepository.getReferenceById(id);}
 
     public Registro concluir(Long id) {
         Registro registro = this.findById(id);
-        registro.concluirOrdem();
-        registro = repository.save(registro);
-        this.send(new RegistroAlterado(registro.getPedidoId(), "EM_TRANSITO"));
+        registro.concluirRegistro();
+        registro = registroRepository.save(registro);
+        this.send(new RegistroAlterado(registro.getPedidoID(), "EM_TRANSITO"));
         return registro;
     }
 
     public List<Registro> findAll() {
-        return repository.findAll();
+        return registroRepository.findAll();
     }
 }

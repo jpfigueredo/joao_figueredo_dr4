@@ -24,8 +24,8 @@ public class RegistroAlteradoDeserializer extends StdDeserializer<RegistroAltera
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
         try {
             event = new RegistroAlterado(
-                    node.get("idPedido").asLong(),
-                    node.get("estado").asText(),
+                    node.get("pedidoID").asLong(),
+                    node.get("status").asText(),
                     sdf.parse(node.get("momento").asText())
             );
         } catch (ParseException e) {
