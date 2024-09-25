@@ -59,7 +59,7 @@ public class PedidoService {
 
     private void enviar(EstadoPedidoMudou estado) {
         pubSubTemplate.setMessageConverter(converter);
-        pubSubTemplate.publish("dr4_topic", estado);
+        pubSubTemplate.publish("teste-dr4", estado);
         LOG.info("***** Mensagem Publicada ---> " + estado);
     }
 

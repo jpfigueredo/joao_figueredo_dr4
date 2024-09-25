@@ -1,25 +1,23 @@
-package br.edu.infnet.pedidos.eventos;
+package br.com.infnet.transporte_service.eventos;
 
-import br.edu.infnet.pedidos.domain.PedidoStatus;
 import java.io.Serializable;
 import java.util.Date;
 
-public class EstadoPedidoMudou implements Serializable {
-    
+public class EstadoEntregaMudou implements Serializable {
     private Long idPedido;
-    private PedidoStatus estado;
+    private String estado;
     private Date momento;
-    
-    public EstadoPedidoMudou() {        
+
+    public EstadoEntregaMudou() {
     }
 
-    public EstadoPedidoMudou(Long idPedido, PedidoStatus estado) {
+    public EstadoEntregaMudou(Long idPedido, String estado) {
         this.idPedido = idPedido;
         this.estado = estado;
         this.momento = new Date();
     }
-    
-    public EstadoPedidoMudou(Long idPedido, PedidoStatus estado, Date momento) {
+
+    public EstadoEntregaMudou(Long idPedido, String estado, Date momento) {
         this.idPedido = idPedido;
         this.estado = estado;
         this.momento = momento;
@@ -33,11 +31,11 @@ public class EstadoPedidoMudou implements Serializable {
         this.idPedido = idPedido;
     }
 
-    public PedidoStatus getEstado() {
+    public String getEstado() {
         return estado;
     }
 
-    public void setEstado(PedidoStatus estado) {
+    public void setEstado(String estado) {
         this.estado = estado;
     }
 
@@ -51,6 +49,6 @@ public class EstadoPedidoMudou implements Serializable {
 
     @Override
     public String toString() {
-        return "EstadoPedidoMudou{" + "idPedido=" + idPedido + ", estado=" + estado + ", momento=" + momento + '}';
+        return "EstadoEntregaMudou{" + "idPedido=" + idPedido + ", estado=" + estado + ", momento=" + momento + '}';
     }
 }
